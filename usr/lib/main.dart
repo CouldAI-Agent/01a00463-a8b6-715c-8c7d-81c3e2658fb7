@@ -1,67 +1,147 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const BrownieRecipeApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class BrownieRecipeApp extends StatelessWidget {
+  const BrownieRecipeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Brownie Recipe',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
+        useMaterial3: true,
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const MyHomePage(title: 'Flutter Demo Home Page'),
+        '/': (context) => const RecipeScreen(),
       },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+class RecipeScreen extends StatelessWidget {
+  const RecipeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = MediaQuery.of(context).size.width > 600;
+
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Fudgy Brownie Recipe'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text('$_counter', style: Theme.of(context).textTheme.headlineMedium),
-          ],
-        ),
+      body: SafeArea(
+        child: isDesktop
+            ? const Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: IngredientsList()),
+                  VerticalDivider(width: 1),
+                  Expanded(flex: 2, child: InstructionsList()),
+                ],
+              )
+            : ListView(
+                children: const [
+                  IngredientsList(),
+                  Divider(),
+                  InstructionsList(),
+                ],
+              ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), 
+    );
+  }
+}
+
+class IngredientsList extends StatelessWidget {
+  const IngredientsList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final ingredients = [
+      '1/2 cup (115g) unsalted butter, melted',
+      '1 tablespoon cooking oil',
+      '1 1/8 cup (225g) superfine sugar',
+      '2 large eggs',
+      '2 teaspoons vanilla extract',
+      '1/2 cup (65g) all-purpose flour',
+      '1/2 cup (50g) unsweetened cocoa powder',
+      '1/4 teaspoon salt',
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Ingredients',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 16),
+          ...ingredients.map((ingredient) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  children: [
+                    const Icon(Icons.check_box_outline_blank, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(ingredient)),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+}
+
+class InstructionsList extends StatelessWidget {
+  const InstructionsList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final instructions = [
+      'Preheat oven to 350°F (175°C).',
+      'Lightly grease an 8-inch square baking pan with cooking oil spray. Line with parchment paper.',
+      'Combine melted butter, oil, and sugar together in a medium-sized bowl. Whisk well to combine.',
+      'Add the eggs and vanilla; beat until lighter in color (another minute).',
+      'Sift in flour, cocoa powder, and salt. Gently fold the dry ingredients into the wet ingredients until JUST combined (do not overmix).',
+      'Pour batter into prepared pan, smoothing the top out evenly.',
+      'Bake for 20-25 minutes, or until the center of the brownies in the pan no longer jiggles and is just set to the touch.',
+      'Remove and allow to cool to room temperature before slicing.',
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Instructions',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 16),
+          ...instructions.asMap().entries.map((entry) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      radius: 12,
+                      child: Text('${entry.key + 1}', style: const TextStyle(fontSize: 12)),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(child: Text(entry.value)),
+                  ],
+                ),
+              )),
+        ],
+      ),
     );
   }
 }
